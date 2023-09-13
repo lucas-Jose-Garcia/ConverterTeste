@@ -1,0 +1,26 @@
+                //Importar Ordem de Coleta
+                formViagem.btnImportarInformacoes.ClickPopMenu("[4]");
+                formViagem.formImportarOrdemColeta.btnLocalizar.Click();
+                formViagem.formImportarOrdemColeta.gridListagem.SelecionarCheck("Status", "Pendente");
+                formViagem.formImportarOrdemColeta.btnConfirmar.Click();
+                new FormDialogoMensagem().ClickBotao("Dados incompletos", "&Ok", "Na importação, foram encontrados apenas alguns valores.\r\nAinda faltam Quilometragem, Frete Recebido, Despesas, etc.");
+
+                //Inicial
+                formViagem.edtDataSaida.Digitar(DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                formViagem.edtDataChegada.Digitar(DateTime.UtcNow.AddDays(5).ToString("dd-MM-yyyy"));
+                formViagem.cbClassificacaoViagem.Digitar(classificacaoViagem.Descricao);
+
+                //Aba Veículo                
+                formViagem.cbVeiculo.VerificarTexto(veiculo.Placa);
+                formViagem.cbMotorista.VerificarTexto(motorista.Nome);
+                formViagem.edtComissao.Digitar("5");
+                formViagem.edtFixoMotorista.Digitar("500");
+                formViagem.ckTaxaDesconto.Click();
+                formViagem.edtTaxaDesconto.Digitar("100");
+                formViagem.btnEdtTabelaMotorista.AbrirLocalizar();
+                new FormDialogoMensagem().ClickBotao("Importação de Tabela", "&Sim", "Não foi encontrada nenhuma Tabela de Motorista utilizando os critérios de busca parametrizados. Deseja importar os dados de outra Tabela?");
+                formViagem.formLocalizarTabelasFrete.edtDescricao.Digitar(tabelaFreteMotorista.Descricao);
+                formViagem.formLocalizarTabelasFrete.btnLocalizar.Click();
+                formViagem.formLocalizarTabelasFrete.btnConfirmar.Click();
+                formViagem.ckAtingiuMeta.Click();
+                formViagem.edtFixoMotorista.VerificarTexto(tabelaFreteMotorista.ValorFixo);

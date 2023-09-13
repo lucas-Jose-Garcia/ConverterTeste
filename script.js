@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (line.trim() !== "") {
                 const originalLine = line.trim()
 
-                if (!originalLine.includes("//")) {
+                if (!originalLine.includes("//") && !originalLine.includes("region")) {
                     formattedLine =  `E($"", () => { ${line.trim()} });`;
                     for (const key in config) {
                         if (originalLine.includes(key)) {
@@ -51,20 +51,21 @@ document.addEventListener("DOMContentLoaded", function () {
                                 palavra = extrairTexto(originalLine)
                                 variavel = palavra[0].toLowerCase() + palavra.slice(1)
                                 textoComVariavel = originalLine.replace(regexForParentheses, `(${variavel})`);
+                                console.log(textoComVariavel)
                             }
 
                             if (formattedLine.includes("VerificarTexto") && originalLine.includes('"')) {
                                 formattedLine = `E($"${config[key]}['${originalValue.replace(regexAspas, '')}']", (string ${variavel}) => { ${textoComVariavel} });`
                                 break;
                             } else if (formattedLine.includes("VerificarTexto")) {
-                                formattedLine = `E($"${config[key]}['${originalValue.replace(regexAspas, '')}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
+                                formattedLine = `E($"${config[key]}['{${originalValue.replace(regexAspas, '')}}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
                                 break;
                             }
 
                             if (originalLine.includes("Digitar") || formattedLine.includes("VerificarTexto") && originalLine.includes('"') && !originalLine.includes('DateTime')) {
                                 formattedLine = `E($"${config[key]}['${originalValue.replace(regexAspas, '')}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
                             } else if (originalLine.includes("Digitar") || formattedLine.includes("VerificarTexto")) {
-                                formattedLine = `E($"${config[key]}['{${originalValue.replace(regexAspas, '')}}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
+                                formattedLine = `E($"${config[key]}['{${originalValue}}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
                             } else {
                                 formattedLine = `E($"${config[key]}", () => { ${originalLine} });`;
                             }
