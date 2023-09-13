@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+    background: #222831;;
+    color: #f2f2f2;
+    padding: 12px;
+    margin-bottom: 30px;
+}
+
+.conteudo {
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.conteudo textarea {
+    width: 40vw;
+    height: 50vh;
+    padding: 12px;
+}
+
+#convertButton {
+    height: 50px;
+    width: 150px;
+    padding: 14px;
+    margin: 14px;
+}
+
+.config {
+    width: 100vw;
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.config h3 {
+    padding: 8px;
+}
+
+.config textarea {
+    width: 90vw;
+    height: 20vh;
+    padding: 12px;
+}
