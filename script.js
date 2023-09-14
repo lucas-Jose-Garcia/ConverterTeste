@@ -17,13 +17,13 @@ const nomeComponentes = {
 
 const prefixos = ["edt", "cb", "btnEdt", "btn", "ck", "pc"];
 
-function extrairPropsDaLinha(texto) {
+function extrairProps(texto) {
     const textoDepoisParenteses = texto.substring(texto.indexOf("(")+1, texto.length);
     let textoDeste = textoDepoisParenteses.substring(0, textoDepoisParenteses.lastIndexOf(")"));
     
     //tratar quando tiver ""
     const type = textoDeste[0] == '"' ? 'texto' : 'variavel'
-    if (type == 'texto') textoDeste = textoDeste.substring(1, texto.length - 1);
+    if (type == 'texto') textoDeste = textoDeste.substring(1, textoDeste.length - 1);
 
     return [type, textoDeste]
 }
@@ -47,7 +47,11 @@ function extrairNomeCampo(texto) {
 }
 
 function formatarPrimeiraLetraParaMinuscula(texto) {
-    const formato = texto[0].toLowerCase() + texto.slice(1)
+    let formato = ""
+    if (texto !== "") {
+        formato = texto[0].toLowerCase() + texto.slice(1)
+    }
+
     return formato
 }
 
@@ -93,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     //adiciona o conteúdo do parênteses no gherkin
-                    const props = extrairPropsDaLinha(originalLine)
+                    const props = extrairProps(originalLine)
                     const type = props[0]
                     const originalValue = props[1]
                     const campo = extrairNomeCampo(originalLine)
