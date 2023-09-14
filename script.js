@@ -1,7 +1,7 @@
 const config = {
     "FormDialogoMensagem().ClickBotao": "na mensagem",
     "Marcar": "clico ",
-    "VerificarTexto": "espero que ",
+    "VerificarTexto": "espero que",
     "Click": "clico",
     "Digitar": "digito",
 };
@@ -9,7 +9,7 @@ const config = {
 const nomeComponentes = {
     "btn": "no botão",
     "edt": "no campo",
-    "cb": "no combobox",
+    "cb": "no campo",
     "ck": "no checkbox",
     "pc": "na aba",
     "btnEdt": "no campo"
@@ -67,11 +67,22 @@ function adicionarVariavelNoAction(original, variavel) {
     return resut
 }
 
+function extrairInformacoesPreRequisito(linha) {
+    const dados = linha.split('=')
+    const valor = dados[1].trim()
+    return [dados[0].trim(), valor[0] == '"' ? valor.substring(1, valor.length-1) : valor]
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const inputTextarea = document.getElementById("inputTextarea");
     const outputTextarea = document.getElementById("outputTextarea");
     const convertButton = document.getElementById("convertButton");
+
+    const inputTextareaPre = document.getElementById("inputTextareaPre");
+    const outputTextareaPre = document.getElementById("outputTextareaPre"); 
+    const convertButtonPreRequisito = document.getElementById("convertButtonPreRequisito");
+
 
     convertButton.addEventListener("click", function () {
         const inputText = inputTextarea.value;
@@ -136,4 +147,38 @@ document.addEventListener("DOMContentLoaded", function () {
         navigator.clipboard.writeText(outputText);
 
     });
+
+    convertButtonPreRequisito.addEventListener("click", function () {
+        const value = inputTextareaPre.value.trim()
+        const infos = value.split("\n")
+        const variavel = infos[0].substring(0, infos[0].indexOf("=") - 1)
+        let outputText = "";
+
+        if (value !== '') {
+            for (index = 2; index < infos.length - 1; index++) {
+                let linha = infos[index].trim()
+                linha = linha[linha.length-1] == ',' ? linha.substring(0, linha.length-1) : linha
+
+                const dados = extrairInformacoesPreRequisito(linha)
+                const parametro = dados[0]
+                const valor = dados[1]
+                const strVariavel = formatarPrimeiraLetraParaMinuscula(parametro)
+
+                outputText += `E($"com a ${parametro} ['${valor}']", (string ${strVariavel}) => { ${variavel}.${parametro} = ${strVariavel}; })\n` 
+            }
+        }
+
+        outputText += `E($"cadastro o/a ${variavel}", () => { ${variavel}.Adicionar(); })\n`
+        outputTextareaPre.value = outputText;
+        navigator.clipboard.writeText(outputText);
+    });
+
 });
+
+
+function validaValor(input) {
+    if (input.value.length > 2) {
+        input.value = input.value.slice(0, 2);
+    }
+    input.value = Math.min(Math.max(input.value, 1), 99);
+}

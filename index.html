@@ -16,11 +16,17 @@
         <textarea id="outputTextarea" readonly></textarea>
     </div>
 
+    <div class="conteudo_pre">
+        <textarea id="inputTextareaPre" placeholder='veiculo = new PreRequisitosBD.Veiculo&#10{&#10&#10     Descricao = "ABT8566",&#10     Placa = "ABT8566"&#10};'></textarea>
+        <button id="convertButtonPreRequisito">Converter -></button>
+        <textarea id="outputTextareaPre" readonly></textarea>
+    </div>
+
     <div class="box_gerar_conteudo">
         <div class="content">
             <div class="box">
                 <p>Quantidade de Casos:</p>
-                <input id="edtQuantidade" type="number" placeholder="1" min="1" max="100"/>
+                <input id="edtQuantidade" type="number" placeholder="1" min="1" max="99" oninput="validaValor(this)"/>
                 <button id="btnGerar">Gerar</button>
             </div>
             <textarea id="caso_textarea" placeholder=""></textarea>
