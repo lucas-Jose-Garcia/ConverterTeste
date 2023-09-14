@@ -1,21 +1,66 @@
 const config = {
-    "btnIncluir": "clico no botão Incluir",
-    "Digitar": "digito ",
-    "btnConfirmar": "clico no botão Confirmar",
-    "FormDialogoMensagem().ClickBotao": "na mensagem [*] clico no botão [*]",
-    "Marcar": "clico no checkbox ",
-    "VerificarTexto": "espero que o campo [*] esteja preenchido com ",
-    "Click": "clico no botão ",
+    "FormDialogoMensagem().ClickBotao": "na mensagem",
+    "Marcar": "clico ",
+    "VerificarTexto": "espero que ",
+    "Click": "clico",
+    "Digitar": "digito",
 };
 
-function extrairTexto(texto) {
-    const prefixos = ["edt", "cb", "btnEdt"];
+const nomeComponentes = {
+    "btn": "no botão",
+    "edt": "no campo",
+    "cb": "no combobox",
+    "ck": "no checkbox",
+    "pc": "na aba",
+    "btnEdt": "no campo"
+}
+
+const prefixos = ["edt", "cb", "btnEdt", "btn", "ck", "pc"];
+
+function extrairPropsDaLinha(texto) {
+    const textoDepoisParenteses = texto.substring(texto.indexOf("(")+1, texto.length);
+    let textoDeste = textoDepoisParenteses.substring(0, textoDepoisParenteses.lastIndexOf(")"));
+    
+    //tratar quando tiver ""
+    const type = textoDeste[0] == '"' ? 'texto' : 'variavel'
+    if (type == 'texto') textoDeste = textoDeste.substring(1, texto.length - 1);
+
+    return [type, textoDeste]
+}
+
+function extrairNomeCampo(texto) {
     const regexPrefixos = new RegExp(`^(${prefixos.join("|")})`, 'i');
 
-    let textoAntesParenteses = texto.substring(0, texto.indexOf("("));
-    let textoDeste = textoAntesParenteses.substring(0, textoAntesParenteses.lastIndexOf("."));
-    let textoDireita = textoDeste.substring(textoDeste.lastIndexOf(".") + 1);
-    return textoDireita.replace(regexPrefixos, '');
+    const textoAntesParenteses = texto.substring(0, texto.indexOf("("));
+    const textoDeste = textoAntesParenteses.substring(0, textoAntesParenteses.lastIndexOf("."));
+    const textoDireita = textoDeste.substring(textoDeste.lastIndexOf(".") + 1);
+
+    //extrair componente
+    let tratamento = ""
+    prefixos.forEach((prefixo) => {
+        if (textoDeste.includes(prefixo)) {
+            tratamento = nomeComponentes[prefixo]
+        }
+    }) 
+
+    return [textoDireita.replace(regexPrefixos, ''), tratamento]
+}
+
+function formatarPrimeiraLetraParaMinuscula(texto) {
+    const formato = texto[0].toLowerCase() + texto.slice(1)
+    return formato
+}
+
+function adicionarVariavelNoAction(original, variavel) {
+    let resut = ""
+    if (variavel !== '') {
+        const textoAntesParenteses = original.substring(0, original.indexOf("(")+1);
+        resut = textoAntesParenteses + variavel + ");"
+    } else {
+        resut = original
+    }
+
+    return resut
 }
 
 
@@ -23,55 +68,56 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputTextarea = document.getElementById("inputTextarea");
     const outputTextarea = document.getElementById("outputTextarea");
     const convertButton = document.getElementById("convertButton");
-    const regexForParentheses = /\(([^)]+)\)/;
-    
-
-    const regexAspas = /["']/g
 
     convertButton.addEventListener("click", function () {
         const inputText = inputTextarea.value;
         const lines = inputText.split("\n");
         let outputText = "";
         let formattedLine = "";
-        let palavra = "";
-        let variavel = "";
-        let textoComVariavel = ""
-        let componente = ""
 
         for (const line of lines) {
-            if (line.trim() !== "") {
-                const originalLine = line.trim()
+            let gherkin = ""
+            let variavel = ""
+            let action = ""
+            const originalLine = line.trim()
 
+            if (line.trim() !== "") {
                 if (!originalLine.includes("//") && !originalLine.includes("region")) {
-                    formattedLine =  `E($"", () => { ${line.trim()} });`;
+
+                    //verifica se existe algum texto padrão para a linha atual
                     for (const key in config) {
                         if (originalLine.includes(key)) {
-                            if (originalLine.includes("Digitar") || originalLine.includes("VerificarTexto")) {
-                                originalValue = regexForParentheses.exec(originalLine)[1]
-                                palavra = extrairTexto(originalLine)
-                                variavel = palavra[0].toLowerCase() + palavra.slice(1)
-                                textoComVariavel = originalLine.replace(regexForParentheses, `(${variavel})`);
-                                console.log(textoComVariavel)
-                            }
-
-                            if (formattedLine.includes("VerificarTexto") && originalLine.includes('"')) {
-                                formattedLine = `E($"${config[key]}['${originalValue.replace(regexAspas, '')}']", (string ${variavel}) => { ${textoComVariavel} });`
-                                break;
-                            } else if (formattedLine.includes("VerificarTexto")) {
-                                formattedLine = `E($"${config[key]}['{${originalValue.replace(regexAspas, '')}}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
-                                break;
-                            }
-
-                            if (originalLine.includes("Digitar") || formattedLine.includes("VerificarTexto") && originalLine.includes('"') && !originalLine.includes('DateTime')) {
-                                formattedLine = `E($"${config[key]}['${originalValue.replace(regexAspas, '')}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
-                            } else if (originalLine.includes("Digitar") || formattedLine.includes("VerificarTexto")) {
-                                formattedLine = `E($"${config[key]}['{${originalValue}}'] no campo ${palavra}", (string ${variavel}) => { ${textoComVariavel} });`
-                            } else {
-                                formattedLine = `E($"${config[key]}", () => { ${originalLine} });`;
-                            }
-                            break; // Saia do loop assim que encontrar a correspondência
+                            gherkin += config[key]
+                            break;
                         }
                     }
+
+                    //adiciona o conteúdo do parênteses no gherkin
+                    const props = extrairPropsDaLinha(originalLine)
+                    const type = props[0]
+                    const originalValue = props[1]
+                    const campo = extrairNomeCampo(originalLine)
+                    const nomeCampo = campo[0]
+                    const tratamento = campo[1]
+
+                    if (originalValue !== '') {
+                        gherkin += gherkin !== '' ? ' ' : '' 
+                        gherkin += type == 'texto' ? `['${originalValue}']` : `['{${originalValue}}']`
+
+                        //Definir o valor da variável
+                        variavel = formatarPrimeiraLetraParaMinuscula(nomeCampo)
+                    }
+                    
+                    //adiciona o nome do campo ao gherkin
+                    gherkin += gherkin[gherkin.length] !== ' ' && tratamento !== '' || nomeCampo !== ''  ? ' ' : ''
+                    gherkin += `${tratamento}${tratamento !== '' ? ' ': ''}${nomeCampo}`
+
+                    //Definir a ação 
+                    action = adicionarVariavelNoAction(originalLine, variavel)
+
+
+                    //Concatena os valores
+                    formattedLine = `E($"${gherkin}", (${variavel !== '' ? 'string ' : ''}${variavel}) => { ${action} });`
                 } else {
                     formattedLine = originalLine
                 }
