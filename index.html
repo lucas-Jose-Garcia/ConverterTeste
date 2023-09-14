@@ -12,15 +12,22 @@
     </header>
     <div class="conteudo">
         <textarea id="inputTextarea" placeholder="Cole o código aqui"></textarea>
-        <button id="convertButton">Converter ➡️</button>
+        <button id="convertButton">Converter -></button>
         <textarea id="outputTextarea" readonly></textarea>
     </div>
 
-    <!-- <div class="config">
-        <h3>Configurações</h3>
-        <textarea id="configTextarea" placeholder="Json de configurações"></textarea>
-    </div> -->
+    <div class="box_gerar_conteudo">
+        <div class="content">
+            <div class="box">
+                <p>Quantidade de Casos:</p>
+                <input id="edtQuantidade" type="number" placeholder="1" min="1" max="100"/>
+                <button id="btnGerar">Gerar</button>
+            </div>
+            <textarea id="caso_textarea" placeholder=""></textarea>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
+    <script src="./createPattern.js"></script>
 </body>
 </html>

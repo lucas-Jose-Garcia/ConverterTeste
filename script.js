@@ -133,5 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         outputTextarea.value = outputText;
+        navigator.clipboard.writeText(outputText);
+
     });
 });

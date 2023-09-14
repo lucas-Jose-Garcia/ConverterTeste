@@ -32,7 +32,18 @@ header {
     margin: 14px;
 }
 
-.config {
+button {
+    height: 33px;
+    width: 60px;
+    font-family: 'Source Sans Pro', sans-serif;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    background-color: #059862;
+    color: #f2f2f2;   
+    margin: 8px;
+}
+
+/* .config {
     width: 100vw;
     margin-top: 25px;
     display: flex;
@@ -47,6 +58,47 @@ header {
 
 .config textarea {
     width: 90vw;
+    height: 20vh;
+    padding: 12px;
+} */
+
+/* box gerar conteudo */
+
+.box_gerar_conteudo {
+    margin-top: 18px;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.box_gerar_conteudo .content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.box_gerar_conteudo .box {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+}
+
+.box_gerar_conteudo .box p {
+    margin: 8px;
+    font-weight: 600;
+}
+
+.box_gerar_conteudo .box input {
+    padding: 6px;
+
+}
+
+.box_gerar_conteudo textarea {
+    width: 91vw;
     height: 20vh;
     padding: 12px;
 }
