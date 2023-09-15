@@ -164,11 +164,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 const valor = dados[1]
                 const strVariavel = formatarPrimeiraLetraParaMinuscula(parametro)
 
-                outputText += `E($"com a ${parametro} ['${valor}']", (string ${strVariavel}) => { ${variavel}.${parametro} = ${strVariavel}; })\n` 
+                outputText += `E($"com a ${parametro} ['${valor}']", (string ${strVariavel}) => { ${variavel}.${parametro} = ${strVariavel}; });\n` 
             }
         }
 
-        outputText += `E($"cadastro o/a ${variavel}", () => { ${variavel}.Adicionar(); })\n`
+        outputText += `E($"cadastro o/a ${variavel}", () => { ${variavel}.Adicionar(); });\n`
         outputTextareaPre.value = outputText;
         navigator.clipboard.writeText(outputText);
     });
