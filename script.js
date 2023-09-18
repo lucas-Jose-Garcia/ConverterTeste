@@ -95,8 +95,9 @@ function extrairNomeCampo(texto) {
 
     //extrair componente
     let tratamento = ""
+    const verificador = textoDeste.substring(0, 6)
     prefixos.forEach((prefixo) => {
-        if (textoDeste.includes(prefixo)) {
+        if (verificador.includes(prefixo)) {
             tratamento = nomeComponentes[prefixo]
         }
     }) 
