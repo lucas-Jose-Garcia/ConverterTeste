@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const casoTeste = (caso, id) => {
                 return `
                 #region Teste: ""
-                [Test]
+                [Test, Autor(""), DataCriacao("")]
                 [Id("${id}")]
                 [Nome("")]
                 [Detalhamento("")]

@@ -4,7 +4,8 @@ const config = {
     "VerificarTexto": "espero que",
     "Click": "clico",
     "Digitar": "digito",
-    "AtivarPorCaption": "acesso a aba"
+    "AtivarPorCaption": "acesso a aba",
+    "AbrirLocalizar": "clico no botão de [Lupa]"
 };
 
 const nomeComponentes = {
@@ -13,7 +14,8 @@ const nomeComponentes = {
     "cb": "no campo",
     "ck": "no checkbox",
     "pc": "",
-    "btnEdt": "no campo"
+    "btnEdt": "no campo",
+    "mm": "no campo"
 }
 
 const dicionario = {
@@ -69,7 +71,7 @@ const dicionario = {
     "Aliquota": "Alíquota",
 }
 
-const prefixos = ["edt", "cb", "btnEdt", "btn", "ck", "pc"];
+const prefixos = ["edt", "cb", "btnEdt", "btn", "ck", "pc", "mm"];
 
 function extrairProps(texto) {
     const textoDepoisParenteses = texto.substring(texto.indexOf("(")+1, texto.length);
