@@ -4,6 +4,7 @@ const config = {
     "VerificarTexto": "espero que",
     "Click": "clico",
     "Digitar": "digito",
+    "AtivarPorCaption": "acesso a aba"
 };
 
 const nomeComponentes = {
@@ -11,21 +12,74 @@ const nomeComponentes = {
     "edt": "no campo",
     "cb": "no campo",
     "ck": "no checkbox",
-    "pc": "na aba",
+    "pc": "",
     "btnEdt": "no campo"
+}
+
+const dicionario = {
+    "Descricao": "Descrição",
+    "Razao": "Razão",
+    "Codigo": "Código",
+    "Veiculo": "Veículo",
+    "Destinatario": "Destinatário",
+    "Numero": "Número",
+    "Liquido": "Líquido",
+    "Informacoes": "Informações",
+    "Saida": "Saída",
+    "Classificacao": "Classificação",
+    "Comissao": "Comissão",
+    "Distancia": "Distância",
+    "Calculo": "Cálculo",
+    "Conteiner": "Contêiner",
+    "Aviao": "Avião",
+    "Vinculo": "Vínculo",
+    "Observacoes": "Observações",
+    "Observacao": "Observação",
+    "Icms": "ICMS",
+    "Diaria": "Diária",
+    "Pais": "País",
+    "Endereco": "Endereço",
+    "Referencia": "Referência",
+    "Secundario": "Secundário",
+    "Contribuicao": "Contribuição",
+    "Informacoes": "Informações",
+    "Rntrc": "RNTRC",
+    "Inscricao": "Inscrição",
+    "Inss": "INSS",
+    "Cep": "CEP",
+    "Cobranca": "Cobrança",
+    "Praca": "Praça",
+    "Condicao": "Condição",
+    "Agencia": "Agência",
+    "Modulos": "Módulos",
+    "Minimo": "Mínimo",
+    "Cpf": "CPF",
+    "Rg": "RG",
+    "Emissao": "Emissão",
+    "Orgao": "Orgão",
+    "Admissao": "Admissão",
+    "Cnh": "CNH",
+    "Mae": "Mãe",
+    "Pedagio": "Pedágio",
+    "Horaria": "Horária",
+    "Pis": "PIS",
+    "Cofins": "COFINS",
+    "Situacao": "Situação",
+    "Tributaria": "Tributária",
+    "Aliquota": "Alíquota",
 }
 
 const prefixos = ["edt", "cb", "btnEdt", "btn", "ck", "pc"];
 
 function extrairProps(texto) {
     const textoDepoisParenteses = texto.substring(texto.indexOf("(")+1, texto.length);
-    let textoDeste = textoDepoisParenteses.substring(0, textoDepoisParenteses.lastIndexOf(")"));
+    let originalValue = textoDepoisParenteses.substring(0, textoDepoisParenteses.lastIndexOf(")"));
     
     //tratar quando tiver ""
-    const type = textoDeste[0] == '"' ? 'texto' : 'variavel'
-    if (type == 'texto') textoDeste = textoDeste.substring(1, textoDeste.length - 1);
+    const type = originalValue[0] == '"' ? 'texto' : 'variavel'
+    if (type == 'texto') originalValue = originalValue.substring(1, originalValue.length - 1);
 
-    return [type, textoDeste]
+    return {type, originalValue}
 }
 
 function extrairNomeCampo(texto) {
@@ -34,6 +88,8 @@ function extrairNomeCampo(texto) {
     const textoAntesParenteses = texto.substring(0, texto.indexOf("("));
     const textoDeste = textoAntesParenteses.substring(0, textoAntesParenteses.lastIndexOf("."));
     const textoDireita = textoDeste.substring(textoDeste.lastIndexOf(".") + 1);
+    const nomeCampo = textoDireita.replace(regexPrefixos, '')
+    const nomeCampoFormatado = formatarNomeCampo(adicionarEspacos(nomeCampo))
 
     //extrair componente
     let tratamento = ""
@@ -43,7 +99,16 @@ function extrairNomeCampo(texto) {
         }
     }) 
 
-    return [textoDireita.replace(regexPrefixos, ''), tratamento]
+    return {nomeCampo, tratamento, nomeCampoFormatado}
+}
+
+function formatarPrimeiraLetraParaMaiuscula(texto) {
+    let formato = ""
+    if (texto !== "") {
+        formato = texto[0].toUpperCase() + texto.slice(1)
+    }
+
+    return formato
 }
 
 function formatarPrimeiraLetraParaMinuscula(texto) {
@@ -69,8 +134,23 @@ function adicionarVariavelNoAction(original, variavel) {
 
 function extrairInformacoesPreRequisito(linha) {
     const dados = linha.split('=')
+    const parametro = dados[0].trim()
+    const parametroFormatado = formatarNomeCampo(adicionarEspacos(parametro))
     const valor = dados[1].trim()
-    return [dados[0].trim(), valor[0] == '"' ? valor.substring(1, valor.length-1) : valor]
+    return {parametro, valor: valor[0] == '"' ? valor.substring(1, valor.length-1) : valor, parametroFormatado}
+}
+
+function adicionarEspacos(str) {
+    const format = str.replace(/([A-Z])/g, ' \$1').trim();
+    return format
+}
+
+function formatarNomeCampo(campo) {
+    let result = campo
+    for (const key in dicionario) {
+        if (result.includes(key)) result = result.replace(key, dicionario[key])
+    }
+    return result
 }
 
 
@@ -108,12 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     //adiciona o conteúdo do parênteses no gherkin
-                    const props = extrairProps(originalLine)
-                    const type = props[0]
-                    const originalValue = props[1]
-                    const campo = extrairNomeCampo(originalLine)
-                    const nomeCampo = campo[0]
-                    const tratamento = campo[1]
+                    const {type, originalValue} = extrairProps(originalLine)
+                    const {nomeCampo, tratamento, nomeCampoFormatado} = extrairNomeCampo(originalLine)
 
                     if (originalValue !== '') {
                         gherkin += gherkin !== '' ? ' ' : '' 
@@ -124,12 +200,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     
                     //adiciona o nome do campo ao gherkin
-                    gherkin += gherkin[gherkin.length] !== ' ' && tratamento !== '' || nomeCampo !== ''  ? ' ' : ''
-                    gherkin += `${tratamento}${tratamento !== '' ? ' ': ''}${nomeCampo}`
+                    gherkin += gherkin[gherkin.length - 1] !== ' ' && tratamento !== '' || nomeCampo !== ''  ? ' ' : ''
+                    gherkin += `${tratamento}${tratamento !== '' ? ' ': ''}${nomeCampoFormatado}`
 
                     //Definir a ação 
                     action = adicionarVariavelNoAction(originalLine, variavel)
-
 
                     //Concatena os valores
                     formattedLine = `E($"${gherkin}", (${variavel !== '' ? 'string ' : ''}${variavel}) => { ${action} });`
@@ -159,12 +234,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 let linha = infos[index].trim()
                 linha = linha[linha.length-1] == ',' ? linha.substring(0, linha.length-1) : linha
 
-                const dados = extrairInformacoesPreRequisito(linha)
-                const parametro = dados[0]
-                const valor = dados[1]
+                const {parametro, parametroFormatado, valor} = extrairInformacoesPreRequisito(linha)
                 const strVariavel = formatarPrimeiraLetraParaMinuscula(parametro)
 
-                outputText += `E($"com a ${parametro} ['${valor}']", (string ${strVariavel}) => { ${variavel}.${parametro} = ${strVariavel}; });\n` 
+                outputText += `E($"com a ${parametroFormatado} ['${valor}']", (string ${strVariavel}) => { ${variavel}.${parametro} = ${strVariavel}; });\n` 
             }
         }
 
