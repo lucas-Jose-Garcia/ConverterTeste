@@ -1,7 +1,7 @@
 const config = {
     "FormDialogoMensagem().ClickBotao": "na mensagem",
     "Marcar": "clico ",
-    "VerificarTexto": "espero que",
+    "VerificarTexto": "que o campo [%] esteja preenchido com",
     "Click": "clico",
     "Digitar": "digito",
     "AtivarPorCaption": "acesso a aba",
@@ -69,6 +69,8 @@ const dicionario = {
     "Situacao": "Situação",
     "Tributaria": "Tributária",
     "Aliquota": "Alíquota",
+    "Numeracao": "Numeração",
+    "Especie": "Espécie"
 }
 
 const prefixos = ["edt", "cb", "btnEdt", "btn", "ck", "pc", "mm"];
@@ -95,7 +97,7 @@ function extrairNomeCampo(texto) {
 
     //extrair componente
     let tratamento = ""
-    const verificador = textoDeste.substring(0, 6)
+    const verificador = textoDireita.substring(0, 6)
     prefixos.forEach((prefixo) => {
         if (verificador.includes(prefixo)) {
             tratamento = nomeComponentes[prefixo]
@@ -203,8 +205,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     
                     //adiciona o nome do campo ao gherkin
-                    gherkin += gherkin[gherkin.length - 1] !== ' ' && tratamento !== '' || nomeCampo !== ''  ? ' ' : ''
-                    gherkin += `${tratamento}${tratamento !== '' ? ' ': ''}${nomeCampoFormatado}`
+                    if (gherkin.includes("[%]")) {
+                        gherkin = gherkin.replace("[%]", nomeCampoFormatado)
+                    } else {
+                        gherkin += gherkin[gherkin.length - 1] !== ' ' && tratamento !== '' || nomeCampo !== ''  ? ' ' : ''
+                        gherkin += `${tratamento}${tratamento !== '' ? ' ': ''}${nomeCampoFormatado}`
+                    }
 
                     //Definir a ação 
                     action = adicionarVariavelNoAction(originalLine, variavel)
