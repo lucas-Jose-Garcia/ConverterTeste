@@ -22,10 +22,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const casoTeste = (caso, id) => {
                 return `
                 #region Teste: ""
-                [Test, Autor(""), DataCriacao("")]
-                [Id("${id}")]
-                [Nome("")]
-                [Detalhamento("")]
+                [Test, GherkinAutor(""), GherkinDataCriacao("")]
+                [GherkinId("${id}")]
+                [GherkinNome("")]
+                [GherkinDetalhamento("")]
                 public void Teste${caso.toString().padStart(2, '0')}()
                 {
                     Quando($"pressiono o botão Incluir", () => { fORM_DO_CASO.btnIncluir.Click(); });
@@ -45,9 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         const outputText = `
-        [Id("${id}")]
-        [Nome("")]
-        [Detalhamento("")]
+        [GherkinId("${id}")]
+        [GherkinNome("")]
+        [GherkinDetalhamento("")]
         public partial class Cenario : CenarioBase
         {
                 #region Declarações
